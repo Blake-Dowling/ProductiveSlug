@@ -1,0 +1,318 @@
+[[extend 'layout.html']]
+
+<style>
+[v-cloak] {
+     display: none;
+}
+</style>
+
+
+<!-- ******************** Page main div ******************** -->
+<div style="display: flex; flex-direction: column;  font-family: Helvetica;">
+
+
+
+<!-- ************************************************************ -->
+    <!-- ******************** Productivity Bar (Top) ******************** -->
+    <!-- ************************************************************ -->
+    
+    <h1 id="productivity-bar-heading" style="align-self: center; font-size: 2em; font-weight: 600;">Today's Productivity</h1>
+    <div id="productivity-bar" style="margin-top: 0px; margin-bottom: 180px;">
+    
+
+</div>
+
+
+
+
+
+
+
+
+<!-- Vue Target -->
+<div class="section" id="vue-target" v-cloak>
+
+
+
+  <!-- ******************** Event Listing Setting Buttons Row ******************** -->
+  <div class="" style="display: flex; flex-direction:row; justify-content: space-evenly;">
+
+    <!-- Add event button. Calls add_event function, passing url signer -->
+    <a id="addEventButton" class="field" href="[[=URL('add_event', signer=url_signer)]]" >
+      <!-- 'Add' icon after table -->
+      <div class="control"><button class="button is-primary" style="border-radius: 0px;" >Add Task</button></div>
+    </a>
+    
+    <!-- ******************** Your Tasks ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;" @click="set_completed_setting('your_events')" :class="{'is-link': completed_setting=='your_events'}">Your Tasks</button></div>
+    </div>
+
+    <!-- ******************** Your Uncompleted Tasks ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;"  @click="set_completed_setting('your_uncompleted')" :class="{ 'is-link': completed_setting=='your_uncompleted'}">Your Uncompleted Tasks</button></div>
+    </div>
+
+    <!-- ******************** Your Completed Tasks ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;"  @click="set_completed_setting('your_completed')" :class="{ 'is-link': completed_setting=='your_completed'}">Your Completed Tasks</button></div>
+    </div>
+
+    <!-- ******************** All Tasks ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;"  @click="set_completed_setting('all_events')" :class="{ 'is-link': completed_setting=='all_events'}">Group Tasks</button></div>
+    </div>
+
+    <!-- ******************** Uncompleted Button ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;"  @click="set_completed_setting('uncompleted')" :class="{ 'is-link': completed_setting=='uncompleted'}">Group Uncompleted Tasks</button></div>
+    </div>
+
+    <!-- ******************** Completed Button ******************** -->
+    <div class="field" >
+      <div class="control"><button class="button " style=" border-radius: 0px;"  @click="set_completed_setting('completed')" :class="{ 'is-link': completed_setting=='completed'}">Group Completed Tasks</button></div>
+    </div>
+
+
+    <!-- End Task Listings Button Column -->
+  </div>
+
+
+
+
+  <!-- Main Columns container -->
+  <div class="columns ">
+
+    <!-- Event Feed column -->
+    <div class="column is-one-third ">
+      
+
+
+      <!-- ******************** List Events For Loop ******************** -->
+
+      <h1 id="task-list-heading" style="text-align: center; font-size: 2em; font-weight: 600;">Tasks</h1>
+
+      <div v-for="(e, index) in events">
+        <!-- ******************** Date Label ******************** -->
+        <div v-if="index == 0 || (index > 0 && new Date(events[index-1].start).toLocaleDateString() !== new Date(events[index].start).toLocaleDateString())"
+          style="font-size:2em; text-align: center"
+          @click="current_date = new Date(e.start).toLocaleDateString();
+          
+          get_events();">
+          {{new Date(e.start).toLocaleDateString()}}
+        </div>
+
+        <!-- ************************************************************ -->
+        <!-- ******************** Single Event Box ******************** -->
+        <!-- ************************************************************ -->
+        <div class="mt-4 mb-4 p-2" style="border-radius: 0px; border: solid 1px lightgrey; ">
+
+
+                    <!-- ******************** Edit Event Button ******************** -->
+          <!-- Edit event button. Pressed by event listener for an event. -->
+          <!-- {{edit_event_href = "[[=URL('edit_event', " + e.id + ", signer=url_signer)]]"}}
+          {{document.getElementById('editEventButton').href=edit_event_href}} -->
+
+          <div style="display:flex; align-items: center;">
+
+
+            <a id='editEventButton'  class="button m-1 p-2" @click="edit_event(e.id)" style="max-width: 10px; max-height: 10px; border: none;">
+              <span class="icon"><i class="fa fa-fw fa-pencil-square-o"></i></span>
+            </a>
+            <!-- ******************** Delete Event Button ******************** -->
+            <!-- Edit event button. Pressed by event listener for an event. -->
+            <a id=''  class="button m-1 p-2 mb-2 ml-0" @click="delete_event(e.id)" style="max-width: 10px; max-height: 8px; border: none; " >
+              <span class="icon" ><i class="fa fa-trash"></i></span>
+            </a>
+
+            <!-- Productivity Value -->
+            <div style="margin-left: auto; font-size: .8em;">
+            {{ "Productivity Value: " + (new Date( (new Date(e.end)) - (new Date(e.start)) ).getMinutes()*100/(24*60)).toFixed(2) + "%" }}
+          </div>
+
+          </div>
+
+        <nav class="level is-mobile m-0" style="word-wrap: true;">
+
+          <!-- ******************** Start Time  ******************** -->
+          <div class="level-left" style="font-weight: 600;">
+            <span class="level-item">
+              {{(new Date(e.start)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + " - "}}
+              <!-- {{new Date(e.start).getHours()}}:{{new Date(e.start).getMinutes()}} -  -->
+            </span>
+          
+          <!-- ******************** End Time  ******************** -->
+          
+            <span class="level-item">
+              {{(new Date(e.end)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}}
+                <!-- {{new Date(e.end).getHours()}}:{{new Date(e.end).getMinutes()}} -->
+            </span>
+          </div>
+
+          <!-- ******************** User Email ******************** -->
+          <div class="level-right">
+            <a class="level-item" aria-label="reply" @click="set_completed_setting(e.user_email)">
+              <span class="icon is-small">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="ml-2">{{e.user_email}}</span>
+            </a>
+          </div>
+
+        </nav>
+
+
+
+
+
+
+            <!-- ******************** Title ******************** -->
+
+              <div  style="font-weight: bold; word-wrap: break-word;">
+                {{e.title}}
+              </div>
+
+
+
+
+
+          <!-- ******************** Event Description ******************** -->
+          <div class="content m-0 p-0; " style="font-size:.8em; font-weight: 200;">
+            {{e.description}}
+          </div>
+
+
+
+          <!-- ******************** Bottom-of-Box Nav ******************** -->
+          <nav class="level is-mobile m-0 p-0" style="word-wrap: break-word; display: flex; flex-direction: column;">
+
+
+          <!-- ******************** Due Time  ******************** -->
+          <!-- Overdue -->
+          <div v-if="!e.completion_time && new Date(e.due_time) < new Date()" class="level-left m-0" style="font-size: 0.8em; color: red;">
+            <span class="level-item">
+              Due: {{e.due_time}} (Overdue)
+            </span>
+          </div>
+          <!-- Completed on time-->
+          <div v-if="e.completion_time && new Date(e.completion_time) < new Date(e.due_time)" class="level-left m-0" style="font-size: 0.8em; color: rgb(0,255,0);">
+            <span class="level-item">
+              Due: {{e.due_time}} (On Time)
+            </span>
+          </div>
+          <!-- uncompleted, not overdue -->
+          <div v-if="!e.completion_time && new Date(e.due_time) >= new Date()" class="level-left m-0" style="font-size: 0.8em; color: rgb(0,0,255);">
+            <span class="level-item">
+              Due: {{e.due_time}}
+            </span>
+          </div>
+          <!-- Completed late-->
+          <div v-if="e.completion_time && new Date(e.completion_time) >= new Date(e.due_time)" class="level-left m-0" style="font-size: 0.8em; color: red;">
+            <span class="level-item">
+              Due: {{e.due_time}} (Late)
+            </span>
+          </div>
+          
+
+              <!-- ******************** Complete Event Icon ******************** -->
+              <div class="level-right m-0" style="font-size: 0.8em; color: rgb(0,255,0); word-wrap: break-word;">
+                <!-- Completed -->
+                <div v-if="e.completion_time">
+                  <span class="icon is-small">
+                    <i class="fa fa-check-square" ></i>
+                  </span>
+                  <span class="ml-1">Completed: {{e.completion_time}}</span>
+                </div>
+                <!-- Not Completed -->
+                <div v-if="!(e.completion_time)">
+                  <div class="control level-item">
+                    <button class="button is-link" style="color: white; border-radius: 0px;" @click="set_completed(e)" >
+                       Complete Task</button>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- End of Bottom-of-Box Nav -->
+            
+          </nav>
+
+        <!-- ************************************************************ -->
+        <!-- ******************** End Single Event Box ******************** -->
+        <!-- ************************************************************ -->
+        </div>
+        
+
+        <!-- End Event For -->
+      </div>
+
+
+    <!-- End event Feed Column -->
+    </div>
+
+
+
+
+    <!-- Calendar column -->
+    <div class="column is-two-thirds ">
+
+
+
+
+
+
+
+<!-- ************************************************************ -->
+  <!-- ******************** Calendar Component ******************** -->
+  <!-- ************************************************************ -->
+  <!-- Calendar -->
+  <div id="calendar"  style="margin-top:0px"></div>
+
+    <!-- End calendar column -->
+    </div>
+
+
+
+
+
+
+
+    <!-- End Main Columns container -->
+  </div>
+
+  <!-- End vue target -->
+</div>
+
+
+<!-- End page main div -->
+</div>
+<!-- ******************** Edit Event Button ******************** -->
+<!-- Edit event button. Pressed by event listener for an event. -->
+<!-- <a id='editEventButton' visibility="hidden" class="button is-warning" href="[[=URL('index')]]">
+  <span class="icon"><i class="fa fa-fw fa-pencil-square-o"></i></span>
+</a> -->
+
+[[block page_scripts]]
+<!-- Loads the index-specific js for Vue -->
+<script>
+  let sign = "[[=url_signer]]";
+
+  let add_event_url = "[[=XML(add_event_url)]]";
+  let get_events_url = "[[=XML(get_events_url)]]";
+  let get_all_events_url = "[[=XML(get_all_events_url)]]";
+  let edit_event_url = "[[=XML(edit_event_url)]]";
+
+  let delete_event_url = "[[=XML(delete_event_url)]]";
+  let set_completed_setting_url = "[[=XML(set_completed_setting_url)]]";
+  let set_completed_url = "[[=XML(set_completed_url)]]";
+  let get_minutes_url = "[[=XML(get_minutes_url)]]";
+
+
+</script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script src="js/index.js"></script>
+
+[[end]]

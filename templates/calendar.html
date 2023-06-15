@@ -1,0 +1,34 @@
+[[extend 'layout.html']]
+
+
+
+<!-- ************************************************************ -->
+    <!-- ******************** Buttons ******************** -->
+    <!-- ************************************************************ -->
+    <!-- Add event button. Calls add_event function, passing url signer -->
+    <a class="button is-primary" href="[[=URL('add_event', signer=url_signer)]]"]]>
+      <!-- 'Add' icon after table -->
+      <span>Add Event</span>
+    </a>
+      <!-- ******************** Edit Event Button ******************** -->
+  <!-- Edit event button. Pressed by event listener for an event. -->
+  <a id='editEventButton' style="visibility: hidden;" class="button is-warning" href="[[=URL('index')]]">
+      <span class="icon"><i class="fa fa-fw fa-pencil-square-o"></i></span>
+    </a>
+
+  <!-- ************************************************************ -->
+    <!-- ******************** Calendar Component ******************** -->
+    <!-- ************************************************************ -->
+    <div id="calendar"  style="margin-top:100px"></div>
+
+<!-- ******************** Events Argument ******************** -->
+    <!-- Take calendar events list passed from index controller -->
+    <p style="visibility: hidden;" id="calendarEventsVariable">[[=calendarEvents]]</p>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script src="js/Calendar.js"></script>
+<script>
+  let edit_event_url = "[[=XML(edit_event_url)]]";
+
+
+
+</script>

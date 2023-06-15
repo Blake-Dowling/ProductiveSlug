@@ -1,0 +1,24 @@
+[[extend 'layout.html']]
+
+<div class="section">
+    <!-- Back button -->
+    <a class="button is-success" href="[[=URL('index')]]">
+        <span class="icon"><i class="fa fa-backward"></i></span>
+        <span>Back</span>
+    </a>
+
+    <h1 class="title">
+        Edit Event
+    </h1>
+    <!-- Embed form using event database for editing -->
+    [[=form]]
+    
+</div>
+<script>
+    let currentEventID = '[[=event_id]]';
+    let newUrl = "[[=URL('delete_event', 'currentEventID', signer=url_signer)]]";
+    newUrl = newUrl.replace('currentEventID', currentEventID);
+    document.getElementById('deleteEventButton').href = newUrl;
+    console.log(newUrl)
+    
+</script>
