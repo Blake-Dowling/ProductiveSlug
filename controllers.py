@@ -258,7 +258,7 @@ def get_events():
 @action.uses(db, auth.user)
 def set_completed():
     event_id = request.json.get('event_id') #Get passed event ID
-    db(db.event.id == event_id).update(completion_time= datetime.utcnow()) #Update event table completion time
+    db(db.event.id == event_id).update(completion_time= datetime.now()) #Update event table completion time
     #to current time
     return "ok"
 
